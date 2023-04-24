@@ -826,7 +826,6 @@ int main() {
     menu.add_board(a7);
     menu.add_board(a4);
     menu.add_board(a5);
-
     // menu.get_boardgames().pretty_print();
 
     // ----------------- MAIN PROPRIU-ZIS -----------------
@@ -932,7 +931,6 @@ int main() {
 
         } else
         {
-
             menu.print_menu2();
             cin >> choice1;
             switch (choice1) {
@@ -991,13 +989,13 @@ int main() {
                 default:
                     cout << "Invalid choice!" << endl;
                     break;
-
             }
-
         }
-
     }
-
     return 0;
-
 }
+
+
+
+
+
