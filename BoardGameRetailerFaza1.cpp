@@ -1,99 +1,15 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
-class String{
-    int size;
-    char* sir;
 
-public:
-
-    String ()
-    {
-        size = 0;
-        sir = nullptr;
-    }
-    String(const char* s)
-    {
-        size = strlen(s);
-        sir = new char[size+1];
-        strcpy(sir, s);
-        sir[size] = '\0';
-
-    }
-
-    String(const String& s)
-    {
-        this->size = s.size;
-        if (s.sir) {
-            this->sir = new char[size + 1];
-            strcpy(sir, s.sir);
-        } else {
-            this->sir = nullptr;
-        }
-    }
-
-    ~String()
-    {
-        delete[] sir;
-    }
-
-    friend ostream& operator<<(ostream& output, const String& s) {
-        output << s.sir;
-        return output;
-    }
-
-    String& operator=(const String& a)
-    {
-        if ( this != &a ) {
-            delete[] sir;
-
-            size = a.size;
-            sir = new char[size+1];
-            strcpy(sir, a.sir);
-            sir[size] = '\0';
-        }
-
-        return *this;
-    }
-    bool operator==(const String& a)
-    {
-        if ( this-> size != a.size ) {
-            return false;
-        }
-        for (int i = 0; i < size; i++)
-        {
-            if (this->sir[i] != a.sir[i])
-                return false;
-        }
-        return true;
-    }
-
-    friend istream& operator>>(istream& input, String& s) {
-
-        if (s.size != 0)
-            delete[] s.sir;
-        char* temp = new char[100];
-        input >> temp;
-        s.size = strlen(temp);
-        s.sir = new char[s.size+1];
-        strcpy(s.sir, temp);
-        s.sir[s.size] = '\0';
-        delete[] temp;
-        return input;
-    }
-
-    char* get_sir()
-    {
-        return sir;
-    }
-
-
-};
 
 class Boardgame {
-    String name;
+    string name;
     int min_players;
     int max_players;
     int duration;
@@ -103,14 +19,15 @@ public:
 
     Boardgame()
     {
-        name = " ";
+        name = "";
         min_players = 0;
         max_players = 0;
         duration = 0;
         price = 0;
         stock = 0;
     }
-    Boardgame(const String &name, int min_players, int max_players, int duration, int price, int stock)
+
+    Boardgame(const string &name, int min_players, int max_players, int duration, int price, int stock)
     {
         this->name = name;
         this->min_players = min_players;
@@ -135,28 +52,32 @@ public:
         this->stock = this->stock - 1;
     }
 
-    String get_name()
+    string get_name() const
     {
         return this->name;
     }
 
-    int get_price()
+    int get_price() const
     {
         return this->price;
     }
-    int get_stock()
+
+    int get_stock() const
     {
         return this->stock;
     }
-   int get_duration()
+
+    int get_duration() const
     {
         return this->duration;
     }
-   int get_min_players()
+
+    int get_min_players() const
     {
         return this->min_players;
     }
-    int get_max_players()
+
+    int get_max_players() const
     {
         return this->max_players;
     }
@@ -177,7 +98,7 @@ public:
 
     friend istream& operator>>(istream& input, Boardgame& b) {
 
-        String name;
+        string name;
         int min_players;
         int max_players;
         int duration;
@@ -208,67 +129,40 @@ public:
 };
 
 
+using namespace std;
+
 class ShoppingCart {
-    Boardgame* cart;
-    int cart_size;
+    vector<Boardgame> cart;
 
 public:
     ShoppingCart()
     {
-        cart_size = 0;
-        cart = new Boardgame[cart_size];
+        cart.clear();
     }
 
     void add_to_cart(const Boardgame & boardgame) {
-        Boardgame *old_cart = new Boardgame[cart_size];
-        for (int i = 0; i < cart_size; i++)
-        {
-            old_cart[i] = cart[i];
-        }
-        cart = new Boardgame[cart_size + 1];
-        for (int i = 0; i < cart_size; i++)
-        {
-            cart[i] = old_cart[i];
-        }
-        cart[cart_size] = boardgame;
-        cart_size++;
-        delete[] old_cart;
+        cart.push_back(boardgame);
     }
 
     void remove_from_cart(int index) {
-        if (index >= 0 && index < cart_size)
+        if (index >= 0 && index < cart.size())
         {
-            Boardgame* old_cart = new Boardgame[cart_size];
-            for (int i = 0; i < cart_size; i++)
-            {
-                old_cart[i] = cart[i];
-            }
-            cart = new Boardgame[cart_size - 1];
-            int j = 0;
-            for (int i = 0; i < cart_size ; i++)
-            {
-                if (i != index) {
-                    cart[j] = old_cart[i];
-                    j++;
-                }
-            }
-            cart_size--;
-            delete[] old_cart;
+            cart.erase(cart.begin() + index);
         }
         else {
             cout << "Index invalid" << endl;
         }
     }
 
-    void print_cart() {
+    void print_cart() const{
         int total = 0;
         cout << "//////////////////////////" << endl;
-        for (int i = 0; i < cart_size; i++)
+        for (int i = 0; i < cart.size(); i++)
         {
-            cout << i << ". " << cart[i].get_name().get_sir() << " " << cart[i].get_price() << endl;
+            cout << i << ". " << cart[i].get_name() << " " << cart[i].get_price() << endl;
             total += cart[i].get_price();
         }
-        if (cart_size == 0)
+        if (cart.size() == 0)
         {
             cout << "Cosul este gol" << endl;
             cout << "//////////////////////////" << endl;
@@ -278,265 +172,200 @@ public:
             cout << "Totalul este: " << total << endl;
             cout << "//////////////////////////" << endl;
         }
-
     }
 
-    int get_cart_total() {
+    int get_cart_total() const {
         int total = 0;
-        for (int i = 0; i < cart_size; i++)
+        for (int i = 0; i < cart.size(); i++)
         {
             total += cart[i].get_price();
         }
         return total;
     }
 
-    int get_cart_size()
+    int get_cart_size() const
     {
-        return cart_size;
+        return cart.size();
     }
 
-    Boardgame get_cart_boardgame(int i)
+    Boardgame get_cart_boardgame(int i) const
     {
         return cart[i];
     }
+
     void clear_cart()
     {
-        cart_size = 0;
-        delete[] cart;
-        cart = new Boardgame[cart_size];
+        cart.clear();
     }
-
-
 };
 
 class User {
     ShoppingCart cart;
-    String name;
-    String password;
+    string name;
+    string password;
     static int id_count;
     int balance;
     int id;
+
 public:
-    User()
-    {
-        name = String(" ");
-        password = String(" ");
-        balance = 0;
-        id = id_count++;
+    User() : name(" "), password(" "), balance(0), id(id_count++) {
         cart = ShoppingCart();
     }
-    User(const String& name, const String& parola, const int money)
-    {
-        this->name = name;
-        this->password = parola;
-        this->balance = money;
-        this->id = id_count++;
+
+    User(const string& name, const string& password, const int money)
+            : name(name), password(password), balance(money), id(id_count++) {
         cart = ShoppingCart();
     }
-    void add_money(int money)
-    {
-        this->balance = this->balance + money;
+
+    void add_money(int money) {
+        balance += money;
     }
-    int get_money()
-    {
-        return this->balance;
+
+    int get_money() const {
+        return balance;
     }
-    String get_name()
-    {
-        return this->name;
+
+   string get_name() const {
+        return name;
     }
-    String get_password()
-    {
-        return this->password;
+    string get_password() const {
+        return password;
     }
-    int get_id_count()
-    {
-        return this->id_count;
+
+    int get_id() const {
+        return id;
     }
-    void set_name(String name)
-    {
+
+    ShoppingCart& get_shopping_cart() {
+        return cart;
+    }
+
+    void set_name(const string& name) {
         this->name = name;
     }
-    void set_password(String password)
-    {
+
+    void set_password(const string& password) {
         this->password = password;
     }
-    void set_balance(int balance)
-    {
+
+    void set_balance(int balance) {
         this->balance = balance;
     }
-    void add_to_shopping_cart(const Boardgame& boardgame)
-    {
-        this->cart.add_to_cart(boardgame);
-    }
-    void print_shopping_cart()
-    {
-        this->cart.print_cart();
-    }
-    void remove_from_shopping_cart(int index)
-    {
-        this->cart.remove_from_cart(index);
+
+    void add_to_shopping_cart(const Boardgame& boardgame) {
+        cart.add_to_cart(boardgame);
     }
 
-    int get_cart_total()
-    {
-        return this->cart.get_cart_total();
-    }
-    int get_cart_size()
-    {
-        return this->cart.get_cart_size();
-    }
-    Boardgame get_cart_boardgame(int i)
-    {
-        return this->cart.get_cart_boardgame(i);
-    }
-    void clear_cart()
-    {
-        this->cart.clear_cart();
+    void print_shopping_cart() const {
+        cart.print_cart();
     }
 
+    void remove_from_shopping_cart(int index) {
+        cart.remove_from_cart(index);
+    }
 
+    int get_cart_total() const {
+        return cart.get_cart_total();
+    }
+
+    int get_cart_size() const {
+        return cart.get_cart_size();
+    }
+
+    Boardgame get_cart_boardgame(int i) const {
+        return cart.get_cart_boardgame(i);
+    }
+
+    void clear_cart() {
+        cart.clear_cart();
+    }
+
+    int get_id_count() const {
+        return id_count;
+    }
 };
 
 int User::id_count = 0;
 
+class Boardgame_List {
+    vector<Boardgame> list;
+
+public:
+    Boardgame_List() {}
+
+    int get_size() const {
+        return list.size();
+    }
+
+    void add_boardgame(const Boardgame& new_boardgame) {
+        list.push_back(new_boardgame);
+    }
+
+    void remove_if_no_stock() {
+        vector<Boardgame> new_list;
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list[i].get_stock() > 0) {
+                new_list.push_back(list[i]);
+            }
+        }
+
+        list = new_list;
+    }
+
+    Boardgame get_boardgame(int i) const {
+        return list[i];
+    }
+
+    void additionalInformation(int i) const {
+        cout << "Jocul " << list[i].get_name() << " se joaca intre " << list[i].get_min_players() ;
+        cout << " si " << list[i].get_max_players() << " jucatori." << " Si dureaza cam " << list[i].get_duration() << " minute." << endl;
+    }
+
+    void pretty_print() const {
+        cout << "============================" << endl;
+        cout << "     CURRENT BOARDGAMES     " << endl;
+        cout << "============================" << endl;
+        for (int i = 0; i < list.size(); i++) {
+            cout << i << ") " << list[i].get_name() << " || Pret:" << list[i].get_price() << " || Stoc:" << list[i].get_stock() << endl;
+            if (i != list.size() - 1)
+                cout << "---------------------------" << endl;
+        }
+        cout << "============================" << endl << endl;
+    }
+
+    void decrease_stock(int i) {
+        list[i].decrease_stock();
+    }
+};
+
 class Menu {
-    User* users;
-    int size;
+    vector<User> users;
     int logged_user;
-    class Boardgame_list{
-        Boardgame* list;
-        int size;
-
-    public:
-
-        Boardgame_list()
-        {
-            size = 0;
-            list = new Boardgame[size];
-        }
-
-        int get_size(){
-
-            return size;
-        }
-
-        void add_boardgame(const class Boardgame& new_boardgame)
-        {
-
-            Boardgame* old_list = new Boardgame[this->size];
-            for ( int i = 0 ; i < this->size; i++)
-                old_list[i] = this->list[i];
-            this->size = this->size + 1;
-            this->list = new class Boardgame[this->size];
-            for ( int i = 0 ; i < this->size - 1 ; i++)
-            {
-                this->list[i] = old_list[i];
-            }
-            this->list[this->size - 1] = new_boardgame;
-            delete[] old_list;
-        }
-
-
-        void remove_if_no_stock() {
-            int newSize = 0;
-            for (int i = 0; i < this->size; i++)
-            {
-                if (this->list[i].get_stock() > 0)
-                {
-                    newSize++;
-                }
-            }
-
-            if (newSize != this->size) {
-                Boardgame* newList = new Boardgame[newSize];
-                int newIndex = 0;
-
-                for (int i = 0; i < this->size; i++)
-                {
-                    if (this->list[i].get_stock() > 0)
-                    {
-                        newList[newIndex++] = this->list[i];
-                    }
-                }
-
-                delete[] this->list;
-                this->list = newList;
-                this->size = newSize;
-            }
-        }
-
-        Boardgame get_boardgame(int i)
-        {
-            return this->list[i];
-        }
-
-        void additionalInformation (int i)
-        {
-            cout << "Jocul " << this->list[i].get_name().get_sir() << " se joaca intre " << this->list[i].get_min_players() ;
-            cout << " si " << this->list[i].get_max_players() << " jucatori." << " Si dureaza cam " << this->list[i].get_duration() << " minute." << endl;
-        }
-
-        void pretty_print() const {
-            cout << "============================" << endl;
-            cout << "     CURRENT BOARDGAMES     " << endl;
-            cout << "============================" << endl;
-            for (int i = 0; i < this->size; i++)
-            {
-                cout << i << ") " << this->list[i].get_name().get_sir() << " || Pret:" << this->list[i].get_price() << " || Stoc:" << this->list[i].get_stock() << endl;
-                if (i != this->size - 1)
-                    cout << "---------------------------" << endl;
-
-            }
-            cout << "============================" << endl << endl;
-        }
-
-        void scade_stoc(int i)
-        {
-            this->list[i].decrease_stock();
-        }
-
-
-    }games;
+    Boardgame_List games;
 
 public:
     Menu() {
-        size = 1;
-        users = new User[size];
         logged_user = -1;
-        games = Boardgame_list();
-        String admin_name("admin");
-        String admin_password("admin");
-        users[0].set_name(admin_name);
-        users[0].set_password(admin_password);
-        users[0].set_balance(1000000);
+        games = Boardgame_List();
+        string admin_name = "admin";
+        string admin_password = "admin";
+        users.emplace_back(User(admin_name, admin_password, 1000000));
     }
-
 
     void add_user(const User& user) {
-        User* new_users = new User[size + 1];
-        for (int i = 0; i < size; i++) {
-            new_users[i] = users[i];
-        }
-        new_users[size] = user;
-        size++;
-        delete[] users;
-        users = new_users;
+        users.emplace_back(user);
     }
-
 
     void login() {
         bool found = false;
-        char* string1 = new char[100];
-        String name, password;
+        string name, password;
         cout << "Introduceti numele: ";
-        cin >> string1;
-        name = string1;
+        cin >> name;
         cout << "Introduceti parola: ";
-        cin >> string1;
-        password = string1;
-        delete[] string1;
-        for (int i = 0; i < this->size; i++) {
+        cin >> password;
+
+        for (int i = 0; i < users.size(); i++) {
             if (users[i].get_name() == name && users[i].get_password() == password) {
                 logged_user = i;
                 found = true;
@@ -546,13 +375,11 @@ public:
         if (found)
         {
             cout << "===================================" << endl;
-            cout << users[logged_user].get_name().get_sir() << ", bine ai venit la Boardgame Store!(proiectul meu gen)" << endl;
+            cout << users[logged_user].get_name() << ", bine ai venit la Boardgame Store!(proiectul meu gen)" << endl;
             cout << "===================================" << endl;
-
         }
         else
             cout << "Numele sau parola incorecta!" << endl;
-
     }
 
     void logout() {
@@ -574,8 +401,7 @@ public:
         }
     }
 
-    void add_board( const Boardgame &joc)
-    {
+    void add_board(const Boardgame& joc) {
         this->games.add_boardgame(joc);
     }
 
@@ -586,7 +412,6 @@ public:
             cin >> index;
             if (index >= 0 && index < games.get_size()) {
                 users[logged_user].add_to_shopping_cart(games.get_boardgame(index));
-
                 cout << "Jocul a fost adaugat cu succes in cos!" << endl;
             }
             else {
@@ -629,7 +454,7 @@ public:
                     for (int i = 0; i < games.get_size(); i++) {
                         for (int j = 0; j < users[logged_user].get_cart_size(); j++) {
                             if (games.get_boardgame(i).get_name() == users[logged_user].get_cart_boardgame(j).get_name()) {
-                                games.scade_stoc(i);
+                                games.decrease_stock(i);
                             }
                         }
                     }
@@ -649,12 +474,11 @@ public:
         }
     }
 
-    void print_menu1(){
+    void print_menu1() {
         cout << "1. Login" << endl;
         cout << "2. Register" << endl;
         cout << "3. Exit" << endl;
     }
-
 
     void print_menu2() {
         cout << "----------------------------------" << endl;
@@ -687,10 +511,9 @@ public:
         cout << "1. Adauga in cos un joc" << endl;
         cout << "2. Afiseaza mai multe informatii despre un joc" << endl;
         cout << "3. Inapoi" << endl;
-
     }
 
-    void print_menu_vizualizare_cart(){
+    void print_menu_vizualizare_cart() {
         cout << "----------------------------------" << endl;
         cout << "Momentan aveti " << users[logged_user].get_money() << " lei in cont." << endl;
         cout << "Ce doriti sa faceti?" << endl;
@@ -700,33 +523,28 @@ public:
         cout << "3. Inapoi" << endl;
     }
 
-
     void register_user() {
-
-        char temp[100];
-        String name, password;
+        string name, password;
         cout << "Introduceti numele: ";
-        cin >> temp;
-        name = temp;
+        cin >> name;
         cout << "Introduceti parola: ";
-        cin >> temp;
-        password = temp;
+        cin >> password;
         add_user(User(name, password, 0));
         cout << " ---------------------------------- " << endl;
         cout << "Contul dumneavoastra a fost creat cu succes!" << endl;
         cout << " ---------------------------------- " << endl;
     }
 
-    Boardgame_list get_boardgames() {
+    Boardgame_List& get_boardgames() {
         return games;
     }
 
-    User get_user(int index) {
+    User& get_user(int index) {
         return users[index];
     }
 
     int get_users_size() {
-        return size;
+        return users.size();
     }
 
     bool is_admin() {
@@ -740,7 +558,6 @@ public:
         return logged_user;
     }
 
-
 };
 
 
@@ -749,10 +566,10 @@ int main() {
 
     // ----------------- TESTE STRING SI BOARDGAME -----------------
 
-    String s1("Hello");
-    String s2("World");
-    String s3(s1);
-    String s4("World");
+    string s1("Hello");
+    string s2("World");
+    string s3(s1);
+    string s4("World");
     Boardgame b1(s1, 2, 4, 60, 100, 10);
     Boardgame b2(s2, 2, 4, 60, 100, 10);
     Boardgame b3(s3, 2, 4, 60, 100, 10);
@@ -807,15 +624,14 @@ int main() {
       //u1.print_shopping_cart();
       */
 
-
     // ----------------- TESTE MENU -----------------
 
     Menu menu;
-    Boardgame a1(String("Dune: Imperium"), 2, 5, 180, 300, 5);
-    Boardgame a2(String("Calico"), 2, 4, 120, 150, 10);
-    Boardgame a3(String ("Turncoats"), 2, 5, 60, 999, 1);
-    Boardgame a6(String("Modern Art"), 3, 5, 120, 270, 1);
-    Boardgame a7(String("Kakerlaken"), 2, 6, 60, 100, 3);
+    Boardgame a1(string("Dune: Imperium"), 2, 5, 180, 300, 5);
+    Boardgame a2(string("Calico"), 2, 4, 120, 150, 10);
+    Boardgame a3(string ("Turncoats"), 2, 5, 60, 999, 1);
+    Boardgame a6(string("Modern Art"), 3, 5, 120, 270, 1);
+    Boardgame a7(string("Kakerlaken"), 2, 6, 60, 100, 3);
     Boardgame a4(a3);
     Boardgame a5;
     a5 = a4;
@@ -829,7 +645,7 @@ int main() {
     // menu.get_boardgames().pretty_print();
 
     // ----------------- MAIN PROPRIU-ZIS -----------------
-    String s("Jocul cu care index ai dori sa il scoti din cos? ");
+    string s("Jocul cu care index ai dori sa il scoti din cos? ");
     int choice1;
     while (true) {
 
@@ -886,7 +702,7 @@ int main() {
                     }
                 case 3:
                     while (true) {
-                        menu.get_user(menu.get_logged_user()).print_shopping_cart();
+                        menu.get_user(menu.get_logged_user()).get_shopping_cart().print_cart();
                         menu.print_menu_vizualizare_cart();
                         int choice2;
                         cin >> choice2;
@@ -899,7 +715,7 @@ int main() {
                                 cout << s << endl;
                                 int nr;
                                 cin >> nr;
-                                menu.get_user(menu.get_logged_user()).remove_from_shopping_cart(nr);
+                                menu.get_user(menu.get_logged_user()).get_shopping_cart().remove_from_cart(nr);
                                 break;
                             case 3:
                                 goto end;
@@ -959,7 +775,7 @@ int main() {
                     }
                 case 3:
                     while (true) {
-                        menu.get_user(menu.get_logged_user()).print_shopping_cart();
+                        menu.get_user(menu.get_logged_user()).get_shopping_cart().print_cart();
                         menu.print_menu_vizualizare_cart();
                         int choice2;
                         cin >> choice2;
@@ -969,13 +785,13 @@ int main() {
                                 menu.get_boardgames().remove_if_no_stock();
                                 break;
                             case 2:
-                                cout << "Jocul cu care index ai dori sa il scoti din cos? " << endl;
+                                cout << s << endl;
                                 int nr;
                                 cin >> nr;
-                                menu.get_user(menu.get_logged_user()).remove_from_shopping_cart(nr);
+                                menu.get_user(menu.get_logged_user()).get_shopping_cart().remove_from_cart(nr);
                                 break;
                             case 3:
-                                goto end2;
+                                goto end;
                             default:
                                 cout << "Invalid choice!" << endl;
                                 break;
