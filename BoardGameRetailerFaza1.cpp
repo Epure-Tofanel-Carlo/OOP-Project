@@ -199,94 +199,6 @@ public:
     }
 };
 
-class User {
-    ShoppingCart cart;
-    string name;
-    string password;
-    static int id_count;
-    int balance;
-    int id;
-
-public:
-    User() : name(" "), password(" "), balance(0), id(id_count++) {
-        cart = ShoppingCart();
-    }
-
-    User(const string& name, const string& password, const int money)
-            : name(name), password(password), balance(money), id(id_count++) {
-        cart = ShoppingCart();
-    }
-
-    void add_money(int money) {
-        balance += money;
-    }
-
-    int get_money() const {
-        return balance;
-    }
-
-   string get_name() const {
-        return name;
-    }
-    string get_password() const {
-        return password;
-    }
-
-    int get_id() const {
-        return id;
-    }
-
-    ShoppingCart& get_shopping_cart() {
-        return cart;
-    }
-
-    void set_name(const string& name) {
-        this->name = name;
-    }
-
-    void set_password(const string& password) {
-        this->password = password;
-    }
-
-    void set_balance(int balance) {
-        this->balance = balance;
-    }
-
-    void add_to_shopping_cart(const Boardgame& boardgame) {
-        cart.add_to_cart(boardgame);
-    }
-
-    void print_shopping_cart() const {
-        cart.print_cart();
-    }
-
-    void remove_from_shopping_cart(int index) {
-        cart.remove_from_cart(index);
-    }
-
-    int get_cart_total() const {
-        return cart.get_cart_total();
-    }
-
-    int get_cart_size() const {
-        return cart.get_cart_size();
-    }
-
-    Boardgame get_cart_boardgame(int i) const {
-        return cart.get_cart_boardgame(i);
-    }
-
-    void clear_cart() {
-        cart.clear_cart();
-    }
-
-    int get_id_count() const {
-        return id_count;
-    }
-};
-
-int User::id_count = 0;
-
 class Boardgame_List {
     vector<Boardgame> list;
 
@@ -338,6 +250,120 @@ public:
         list[i].decrease_stock();
     }
 };
+
+
+// este clasa abastracta daca fac checku pt boardgames, dar recomandat aici sa adaug niste printuri specifice sa aiba mai mult sens
+class User {
+    ShoppingCart cart;
+    string name;
+    string password;
+    static int id_count;
+    int balance;
+    int id;
+
+public:
+    User() : name(" "), password(" "), balance(0), id(id_count++) {
+        cart = ShoppingCart();
+    }
+
+    User(const string& name, const string& password, const int money)
+            : name(name), password(password), balance(money), id(id_count++) {
+        cart = ShoppingCart();
+    }
+
+    virtual ~User()
+    {
+
+    }
+
+    void add_money(int money) {
+        balance += money;
+    }
+
+    int get_money() const {
+        return balance;
+    }
+
+   string get_name() const {
+        return name;
+    }
+    string get_password() const {
+        return password;
+    }
+
+    int get_id() const {
+        return id;
+    }
+
+    ShoppingCart& get_shopping_cart() {
+        return cart;
+    }
+
+    void set_balance(int balance) {
+        this->balance = balance;
+    }
+
+
+    void add_to_shopping_cart(const Boardgame& boardgame) {
+        cart.add_to_cart(boardgame);
+    }
+
+    int get_cart_total() const {
+        return cart.get_cart_total();
+    }
+
+    int get_cart_size() const {
+        return cart.get_cart_size();
+    }
+
+    Boardgame get_cart_boardgame(int i) const {
+        return cart.get_cart_boardgame(i);
+    }
+
+    void clear_cart() {
+        cart.clear_cart();
+    }
+
+    virtual bool can_add_boardgames() {
+
+    }
+
+
+    static int get_id_count() {
+        return id_count;
+    }
+};
+
+int User::id_count = 0;
+
+//add_money va fi un regex pt card data, cu exception ca in cerinta
+
+class RegularUser : public User {
+public:
+    RegularUser() : User() {}
+
+    RegularUser(const string& name, const string& password, const int money)
+            : User(name, password, money) {}
+
+
+
+
+
+};
+
+class AdminUser : public User {
+
+public:
+    AdminUser() : User() {}
+
+    AdminUser(const string& name, const string& password, const int money)
+              : User(name, password, money) {}
+
+};
+
+
+
+//check if can add boardgames virtual in user
 
 class Menu {
     vector<User> users;
@@ -469,9 +495,6 @@ public:
                 cout << "Cosul este gol, nu ai cum sa cumperi daca cosul este gol" << endl;
             }
         }
-        else {
-            cout << "Trebuie sa fiti logat pentru a cumpara jocuri!" << endl;
-        }
     }
 
     void print_menu1() {
@@ -563,7 +586,7 @@ public:
 
 
 int main() {
-
+/*
     // ----------------- TESTE STRING SI BOARDGAME -----------------
 
     string s1("Hello");
@@ -625,6 +648,7 @@ int main() {
       */
 
     // ----------------- TESTE MENU -----------------
+
 
     Menu menu;
     Boardgame a1(string("Dune: Imperium"), 2, 5, 180, 300, 5);
