@@ -282,7 +282,7 @@ public:
         return balance;
     }
 
-   string get_name() const {
+    string get_name() const {
         return name;
     }
     string get_password() const {
@@ -328,7 +328,7 @@ public:
 
     virtual void add_money() {
 
-        }
+    }
 
 
     static int get_id_count() {
@@ -353,7 +353,7 @@ public:
     void print_welcome() override {
         cout << "Bine ai venit, " << get_name() << "!" << endl;
     }
-  // aici sa adaug exception daca nu da bani bine
+    // aici sa adaug exception daca nu da bani bine
     void add_money() override {
         int money;
         bool flag = 0;
@@ -361,21 +361,21 @@ public:
         cin >> money;
         while (flag == 0 )
         {
-             cout << "Introduceti nr cardului: " << endl;
-                string card;
-                cin >> card;
-                regex card_regex("^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$");
-                if (regex_match(card, card_regex) == true)
-                {
-                    cout << "Card valid, suma a fost adaugata in cont." << endl;
-                    set_balance(get_money()+money);
-                    flag = 1;
-                }
-                else
-                {
-                    cout << "Card invalid, introduceti din nou: ";
-                    cout << endl;
-                }
+            cout << "Introduceti nr cardului: " << endl;
+            string card;
+            cin >> card;
+            regex card_regex("^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$");
+            if (regex_match(card, card_regex) == true)
+            {
+                cout << "Card valid, suma a fost adaugata in cont." << endl;
+                set_balance(get_money()+money);
+                flag = 1;
+            }
+            else
+            {
+                cout << "Card invalid, introduceti din nou: ";
+                cout << endl;
+            }
         }
 
     }
@@ -388,7 +388,7 @@ public:
     AdminUser() : User() {}
 
     AdminUser(const string& name, const string& password, const int money)
-              : User(name, password, money) {}
+            : User(name, password, money) {}
     bool can_add_boardgames() override {
         return true;
     }
@@ -654,146 +654,152 @@ int main() {
             }
         } else
         {
+            // daca dau registrer cu carlo carlo si incerc login aici da seg fault
+            // ca nu e initializat logged_user si nu e -1 si nu intra in if
+            // vezi ca nu merge loginul cum trebuie si nu stiu de ce
+
             AdminUser* admin_user = dynamic_cast<AdminUser*>(menu.get_user(menu.get_logged_user()));
-        if (admin_user)
-        {
-            admin_user->print_welcome();
-            cout << "Numarul de obiecte create de tip User este: " << menu.get_user(menu.get_logged_user())->get_id_count() << endl;
-            cout << "Numarul de useri inregistrati este: " << menu.get_users_size() << endl;
-            menu.print_menu2_admin();
-            cin >> choice1;
-            switch (choice1) {
-                case 1:
-                    admin_user->add_money();
-                    break;
-                case 2:
-                    while (true) {
-                        menu.get_boardgames().pretty_print();
-                        menu.print_menu_vizualizare_jocuri();
-                        int choice2;
-                        cin >> choice2;
-                        switch (choice2) {
-                            case 1:
-                                menu.add_to_cart();
-                                break;
-                            case 2:
-                                menu.print_additional_info();
-                                break;
-                            case 3:
-                                goto end;
-                            default:
-                                cout << "Invalid choice!" << endl;
-                                break;
+            if (admin_user)
+            {
+                admin_user->print_welcome();
+                cout << "Numarul de obiecte create de tip User este: " << menu.get_user(menu.get_logged_user())->get_id_count() << endl;
+                cout << "Numarul de useri inregistrati este: " << menu.get_users_size() << endl;
+                menu.print_menu2_admin();
+                cin >> choice1;
+                switch (choice1) {
+                    case 1:
+                        admin_user->add_money();
+                        break;
+                    case 2:
+                        while (true) {
+                            menu.get_boardgames().pretty_print();
+                            menu.print_menu_vizualizare_jocuri();
+                            int choice2;
+                            cin >> choice2;
+                            switch (choice2) {
+                                case 1:
+                                    menu.add_to_cart();
+                                    break;
+                                case 2:
+                                    menu.print_additional_info();
+                                    break;
+                                case 3:
+                                    goto end;
+                                default:
+                                    cout << "Invalid choice!" << endl;
+                                    break;
+                            }
                         }
-                    }
-                case 3:
-                    while (true) {
-                        menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
-                        menu.print_menu_vizualizare_cart();
-                        int choice2;
-                        cin >> choice2;
-                        switch (choice2) {
-                            case 1:
-                                menu.buy_cart();
-                                menu.get_boardgames().remove_if_no_stock();
-                                break;
-                            case 2:
-                                cout << s << endl;
-                                int nr;
-                                cin >> nr;
-                                menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
-                                break;
-                            case 3:
-                                goto end;
-                            default:
-                                cout << "Invalid choice!" << endl;
-                                break;
+                    case 3:
+                        while (true) {
+                            menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
+                            menu.print_menu_vizualizare_cart();
+                            int choice2;
+                            cin >> choice2;
+                            switch (choice2) {
+                                case 1:
+                                    menu.buy_cart();
+                                    menu.get_boardgames().remove_if_no_stock();
+                                    break;
+                                case 2:
+                                    cout << s << endl;
+                                    int nr;
+                                    cin >> nr;
+                                    menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
+                                    break;
+                                case 3:
+                                    goto end;
+                                default:
+                                    cout << "Invalid choice!" << endl;
+                                    break;
+                            }
                         }
+                        break;
+                    case 4:
+                    {
+                        cout << "Introduceti datele jocului pe care doriti sa il adaugati: " << endl;
+                        Boardgame b;
+                        cin >> b;
+                        menu.add_board(b);
+                        break;
                     }
-                    break;
-                case 4:
-                {
-                    cout << "Introduceti datele jocului pe care doriti sa il adaugati: " << endl;
-                    Boardgame b;
-                    cin >> b;
-                    menu.add_board(b);
-                    break;
-                }
-                end:
-                    break;
-                case 5:
-                    menu.logout();
-                    break;
-                default:
-                {
-                    cout << "Invalid choice!" << endl;
-                    break;
+                    end:
+                        break;
+                    case 5:
+                        menu.logout();
+                        break;
+                    default:
+                    {
+                        cout << "Invalid choice!" << endl;
+                        break;
+                    }
                 }
             }
-        } else {
-            RegularUser* regular_user = dynamic_cast<RegularUser*>(menu.get_user(menu.get_logged_user()));
-            regular_user->print_welcome();
-            menu.print_menu2();
-            cin >> choice1;
-            switch (choice1) {
-                case 1:
-                    regular_user->add_money();
-                    break;
-                case 2:
-                    while (true) {
-                        menu.get_boardgames().pretty_print();
-                        menu.print_menu_vizualizare_jocuri();
-                        int choice2;
-                        cin >> choice2;
-                        switch (choice2) {
-                            case 1:
-                                menu.add_to_cart();
-                                break;
-                            case 2:
-                                menu.print_additional_info();
-                                break;
-                            case 3:
-                                goto end2;
-                            default:
-                                cout << "Invalid choice!" << endl;
-                                break;
+            else {
+                RegularUser* regular_user = dynamic_cast<RegularUser*>(menu.get_user(menu.get_logged_user()));
+                regular_user->print_welcome();
+                menu.print_menu2();
+                cin >> choice1;
+                switch (choice1) {
+                    case 1:
+                        regular_user->add_money();
+                        break;
+                    case 2:
+                        while (true) {
+                            menu.get_boardgames().pretty_print();
+                            menu.print_menu_vizualizare_jocuri();
+                            int choice2;
+                            cin >> choice2;
+                            switch (choice2) {
+                                case 1:
+                                    menu.add_to_cart();
+                                    break;
+                                case 2:
+                                    menu.print_additional_info();
+                                    break;
+                                case 3:
+                                    goto end2;
+                                default:
+                                    cout << "Invalid choice!" << endl;
+                                    break;
+                            }
                         }
-                    }
-                case 3:
-                    while (true) {
-                        menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
-                        menu.print_menu_vizualizare_cart();
-                        int choice2;
-                        cin >> choice2;
-                        switch (choice2) {
-                            case 1:
-                                menu.buy_cart();
-                                menu.get_boardgames().remove_if_no_stock();
-                                break;
-                            case 2:
-                                cout << s << endl;
-                                int nr;
-                                cin >> nr;
-                                menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
-                                break;
-                            case 3:
-                                goto end;
-                            default:
-                                cout << "Invalid choice!" << endl;
-                                break;
+                    case 3:
+                        while (true) {
+                            menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
+                            menu.print_menu_vizualizare_cart();
+                            int choice2;
+                            cin >> choice2;
+                            switch (choice2) {
+                                case 1:
+                                    menu.buy_cart();
+                                    menu.get_boardgames().remove_if_no_stock();
+                                    break;
+                                case 2:
+                                    cout << s << endl;
+                                    int nr;
+                                    cin >> nr;
+                                    menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
+                                    break;
+                                case 3:
+                                    goto end;
+                                default:
+                                    cout << "Invalid choice!" << endl;
+                                    break;
+                            }
                         }
-                    }
-                end2:
-                    break;
-                case 4:
-                    menu.logout();
-                    break;
-                default:
-                    cout << "Invalid choice!" << endl;
-                    break;
+                    end2:
+                        break;
+                    case 4:
+                        menu.logout();
+                        break;
+                    default:
+                        cout << "Invalid choice!" << endl;
+                        break;
+                }
             }
         }
+
     }
     return 0;
-}
 }
