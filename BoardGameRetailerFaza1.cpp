@@ -276,9 +276,6 @@ public:
 
     }
 
-    void add_money(int money) {
-        balance += money;
-    }
 
     int get_money() const {
         return balance;
@@ -327,6 +324,13 @@ public:
     virtual bool can_add_boardgames() {
 
     }
+    virtual void print_welcome() {
+
+    }
+
+    virtual void add_money() {
+
+        }
 
 
     static int get_id_count() {
@@ -345,6 +349,22 @@ public:
     RegularUser(const string& name, const string& password, const int money)
             : User(name, password, money) {}
 
+    bool can_add_boardgames() override {
+        return false;
+    }
+    void print_welcome() override {
+        cout << "Bine ai venit, " << get_name() << "!" << endl;
+    }
+
+    void add_money() override {
+        int money;
+        cout << "Introduceti : ";
+        cin >> money;
+        set_balance(get_money()+money);
+    }
+
+
+
 
 
 
@@ -358,6 +378,19 @@ public:
 
     AdminUser(const string& name, const string& password, const int money)
               : User(name, password, money) {}
+    bool can_add_boardgames() override {
+        return true;
+    }
+    void print_welcome() override {
+        cout << "Bine ai venit admin, " << get_name() << "." << endl;
+        cout << "Ca si admin ai mai multe statistici afisate, si poti adauga jocuri in magazin." << endl;
+    }
+    void add_money() override {
+        int money;
+        cout << "Introduceti suma pe care doriti sa o adaugati: ";
+        cin >> money;
+        set_balance(get_money()+money);
+    }
 
 };
 
@@ -413,19 +446,7 @@ public:
         cout << "Ati fost delogat cu succes!" << endl;
     }
 
-    void add_money() {
-        if (logged_user != -1) {
-            int money;
-            cout << "Introduceti suma de bani pe care doriti sa o adaugati: ";
-            cin >> money;
-            cout << endl;
-            users[logged_user].add_money(money);
-            cout << "Suma a fost adaugata cu succes!" << endl;
-        }
-        else {
-            cout << "Trebuie sa fiti logat pentru a adauga bani!" << endl;
-        }
-    }
+
 
     void add_board(const Boardgame& joc) {
         this->games.add_boardgame(joc);
