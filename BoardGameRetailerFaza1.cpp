@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <regex>
 
 using namespace std;
 
@@ -288,9 +289,6 @@ public:
         return password;
     }
 
-    int get_id() const {
-        return id;
-    }
 
     ShoppingCart& get_shopping_cart() {
         return cart;
@@ -355,19 +353,32 @@ public:
     void print_welcome() override {
         cout << "Bine ai venit, " << get_name() << "!" << endl;
     }
-
+  // aici sa adaug exception daca nu da bani bine
     void add_money() override {
         int money;
-        cout << "Introduceti : ";
+        bool flag = 0;
+        cout << "Introduceti suma de bani care doriti sa o adaugati: ";
         cin >> money;
-        set_balance(get_money()+money);
+        while (flag == 0 )
+        {
+             cout << "Introduceti nr cardului: " << endl;
+                string card;
+                cin >> card;
+                regex card_regex("^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$");
+                if (regex_match(card, card_regex) == true)
+                {
+                    cout << "Card valid, suma a fost adaugata in cont." << endl;
+                    set_balance(get_money()+money);
+                    flag = 1;
+                }
+                else
+                {
+                    cout << "Card invalid, introduceti din nou: ";
+                    cout << endl;
+                }
+        }
+
     }
-
-
-
-
-
-
 
 };
 
@@ -399,7 +410,7 @@ public:
 //check if can add boardgames virtual in user
 
 class Menu {
-    vector<User> users;
+    vector<User*> users;
     int logged_user;
     Boardgame_List games;
 
@@ -409,10 +420,10 @@ public:
         games = Boardgame_List();
         string admin_name = "admin";
         string admin_password = "admin";
-        users.emplace_back(User(admin_name, admin_password, 1000000));
+        users.emplace_back(new AdminUser(admin_name, admin_password, 0));
     }
 
-    void add_user(const User& user) {
+    void add_user( User* user) {
         users.emplace_back(user);
     }
 
@@ -425,7 +436,7 @@ public:
         cin >> password;
 
         for (int i = 0; i < users.size(); i++) {
-            if (users[i].get_name() == name && users[i].get_password() == password) {
+            if (users[i]->get_name() == name && users[i]->get_password() == password) {
                 logged_user = i;
                 found = true;
                 break;
@@ -434,7 +445,7 @@ public:
         if (found)
         {
             cout << "===================================" << endl;
-            cout << users[logged_user].get_name() << ", bine ai venit la Boardgame Store!(proiectul meu gen)" << endl;
+            cout << users[logged_user]->get_name() << ", bine ai venit la Boardgame Store!(proiectul meu gen)" << endl;
             cout << "===================================" << endl;
         }
         else
@@ -458,7 +469,7 @@ public:
             cout << "Introduceti indexul jocului pe care doriti sa il adaugati in cos: ";
             cin >> index;
             if (index >= 0 && index < games.get_size()) {
-                users[logged_user].add_to_shopping_cart(games.get_boardgame(index));
+                users[logged_user]->add_to_shopping_cart(games.get_boardgame(index));
                 cout << "Jocul a fost adaugat cu succes in cos!" << endl;
             }
             else {
@@ -488,24 +499,24 @@ public:
     }
 
     void calculate_balance(int money) {
-        users[logged_user].set_balance(users[logged_user].get_money() - money);
+        users[logged_user]->set_balance(users[logged_user]->get_money() - money);
     }
 
     void buy_cart() {
         if (logged_user != -1) {
-            if (users[logged_user].get_cart_size() > 0) {
-                int money = users[logged_user].get_cart_total();
-                if (money <= users[logged_user].get_money())
+            if (users[logged_user]->get_cart_size() > 0) {
+                int money = users[logged_user]->get_cart_total();
+                if (money <= users[logged_user]->get_money())
                 {
                     calculate_balance(money);
                     for (int i = 0; i < games.get_size(); i++) {
-                        for (int j = 0; j < users[logged_user].get_cart_size(); j++) {
-                            if (games.get_boardgame(i).get_name() == users[logged_user].get_cart_boardgame(j).get_name()) {
+                        for (int j = 0; j < users[logged_user]->get_cart_size(); j++) {
+                            if (games.get_boardgame(i).get_name() == users[logged_user]->get_cart_boardgame(j).get_name()) {
                                 games.decrease_stock(i);
                             }
                         }
                     }
-                    users[logged_user].clear_cart();
+                    users[logged_user]->clear_cart();
                     cout << "Jocurile au fost achizitionate cu succes!" << endl;
                 }
                 else {
@@ -526,7 +537,7 @@ public:
 
     void print_menu2() {
         cout << "----------------------------------" << endl;
-        cout << "Momentan ai " << users[logged_user].get_money() << " lei in cont." << endl;
+        cout << "Momentan ai " << users[logged_user]->get_money() << " lei in cont." << endl;
         cout << "Ce doriti sa faceti?" << endl;
         cout << "----------------------------------" << endl;
         cout << "1. Adauga bani" << endl;
@@ -537,7 +548,7 @@ public:
 
     void print_menu2_admin() {
         cout << "----------------------------------" << endl;
-        cout << "Momentan ai " << users[logged_user].get_money() << " lei in cont." << endl;
+        cout << "Momentan ai " << users[logged_user]->get_money() << " lei in cont." << endl;
         cout << "Ce doriti sa faceti?" << endl;
         cout << "----------------------------------" << endl;
         cout << "1. Adauga bani" << endl;
@@ -549,7 +560,7 @@ public:
 
     void print_menu_vizualizare_jocuri() {
         cout << "----------------------------------" << endl;
-        cout << "Momentan ai " << users[logged_user].get_money() << " lei in cont." << endl;
+        cout << "Momentan ai " << users[logged_user]->get_money() << " lei in cont." << endl;
         cout << "Ce doriti sa faceti?" << endl;
         cout << "----------------------------------" << endl;
         cout << "1. Adauga in cos un joc" << endl;
@@ -559,7 +570,7 @@ public:
 
     void print_menu_vizualizare_cart() {
         cout << "----------------------------------" << endl;
-        cout << "Momentan aveti " << users[logged_user].get_money() << " lei in cont." << endl;
+        cout << "Momentan aveti " << users[logged_user]->get_money() << " lei in cont." << endl;
         cout << "Ce doriti sa faceti?" << endl;
         cout << "----------------------------------" << endl;
         cout << "1. Cumpara" << endl;
@@ -573,7 +584,9 @@ public:
         cin >> name;
         cout << "Introduceti parola: ";
         cin >> password;
-        add_user(User(name, password, 0));
+        RegularUser utilizator(name, password, 0);
+        User* user = static_cast<User*>(&utilizator);
+        add_user(user);
         cout << " ---------------------------------- " << endl;
         cout << "Contul dumneavoastra a fost creat cu succes!" << endl;
         cout << " ---------------------------------- " << endl;
@@ -583,19 +596,12 @@ public:
         return games;
     }
 
-    User& get_user(int index) {
+    User* get_user(int index) {
         return users[index];
     }
 
     int get_users_size() {
         return users.size();
-    }
-
-    bool is_admin() {
-        if (logged_user == 0) {
-            return true;
-        }
-        return false;
     }
 
     int get_logged_user() {
@@ -604,72 +610,7 @@ public:
 
 };
 
-
-
 int main() {
-/*
-    // ----------------- TESTE STRING SI BOARDGAME -----------------
-
-    string s1("Hello");
-    string s2("World");
-    string s3(s1);
-    string s4("World");
-    Boardgame b1(s1, 2, 4, 60, 100, 10);
-    Boardgame b2(s2, 2, 4, 60, 100, 10);
-    Boardgame b3(s3, 2, 4, 60, 100, 10);
-    Boardgame b4(b1);
-    //cout << b4.get_name().get_sir() << endl;
-    Boardgame b5;
-    b5 = b4;
-    //cout << b5.get_name().get_sir() << endl;
-
-    //cin >> b4;
-
-    // ----------------- TESTE BOARDGAME_LIST -----------------
-
-    //Boardgame_list bl;
-    //bl.add_boardgame(b1);
-    //bl.add_boardgame(b2);
-    //bl.add_boardgame(b3);
-    //bl.pretty_print();
-    for (int i = 0; i < 10; i++)
-    {
-        //bl.scade_stoc(0);
-    }
-    //bl.additionalInformation(0);
-    //bl.remove_if_no_stock();
-    // bl.pretty_print();
-
-    // ----------------- TESTE SHOPPING CART -----------------
-
-    ShoppingCart sc;
-    //sc.print_cart();
-    sc.add_to_cart(b1);
-    sc.add_to_cart(b2);
-    sc.add_to_cart(b3);
-    //sc.print_cart();
-    sc.remove_from_cart(1);
-    //sc.print_cart();
-    sc.clear_cart();
-    //sc.print_cart();
-
-    // ----------------- TESTE USER -----------------
-
-    /*  User u1(s1, s2, 100);
-      User u2(s2, s3, 200);
-      User u3(s3, s4, 300);
-      u1.add_to_shopping_cart(b1);
-      u1.add_to_shopping_cart(b2);
-      u1.add_to_shopping_cart(b3);
-      //u1.print_shopping_cart();
-      u1.remove_from_shopping_cart(1);
-      //u1.print_shopping_cart();
-      u1.clear_cart();
-      //u1.print_shopping_cart();
-      */
-
-    // ----------------- TESTE MENU -----------------
-
 
     Menu menu;
     Boardgame a1(string("Dune: Imperium"), 2, 5, 180, 300, 5);
@@ -712,23 +653,23 @@ int main() {
                     break;
             }
         } else
-        if (menu.is_admin())
         {
-            cout << "Momentan sunteti logat ca administrator." << endl;
-            cout << "Numarul de obiecte create de tip User este: " << menu.get_user(menu.get_logged_user()).get_id_count() << endl;
+            AdminUser* admin_user = dynamic_cast<AdminUser*>(menu.get_user(menu.get_logged_user()));
+        if (admin_user)
+        {
+            admin_user->print_welcome();
+            cout << "Numarul de obiecte create de tip User este: " << menu.get_user(menu.get_logged_user())->get_id_count() << endl;
             cout << "Numarul de useri inregistrati este: " << menu.get_users_size() << endl;
-            cout << "Din moment ce sunteti administrator, nu uitati ca puteti adauga jocuri la catalog" << endl;
             menu.print_menu2_admin();
             cin >> choice1;
             switch (choice1) {
                 case 1:
-                    menu.add_money();
+                    admin_user->add_money();
                     break;
                 case 2:
                     while (true) {
                         menu.get_boardgames().pretty_print();
                         menu.print_menu_vizualizare_jocuri();
-                        // cout << menu.get_boardgames().get_size() << endl;
                         int choice2;
                         cin >> choice2;
                         switch (choice2) {
@@ -747,7 +688,7 @@ int main() {
                     }
                 case 3:
                     while (true) {
-                        menu.get_user(menu.get_logged_user()).get_shopping_cart().print_cart();
+                        menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
                         menu.print_menu_vizualizare_cart();
                         int choice2;
                         cin >> choice2;
@@ -760,7 +701,7 @@ int main() {
                                 cout << s << endl;
                                 int nr;
                                 cin >> nr;
-                                menu.get_user(menu.get_logged_user()).get_shopping_cart().remove_from_cart(nr);
+                                menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
                                 break;
                             case 3:
                                 goto end;
@@ -775,11 +716,11 @@ int main() {
                     cout << "Introduceti datele jocului pe care doriti sa il adaugati: " << endl;
                     Boardgame b;
                     cin >> b;
-                    //cout << menu.get_boardgames().get_size() << endl;
                     menu.add_board(b);
-                    //cout << menu.get_boardgames().get_size() << endl;
                     break;
-                } end: break;
+                }
+                end:
+                    break;
                 case 5:
                     menu.logout();
                     break;
@@ -789,14 +730,14 @@ int main() {
                     break;
                 }
             }
-
-        } else
-        {
+        } else {
+            RegularUser* regular_user = dynamic_cast<RegularUser*>(menu.get_user(menu.get_logged_user()));
+            regular_user->print_welcome();
             menu.print_menu2();
             cin >> choice1;
             switch (choice1) {
                 case 1:
-                    menu.add_money();
+                    regular_user->add_money();
                     break;
                 case 2:
                     while (true) {
@@ -820,7 +761,7 @@ int main() {
                     }
                 case 3:
                     while (true) {
-                        menu.get_user(menu.get_logged_user()).get_shopping_cart().print_cart();
+                        menu.get_user(menu.get_logged_user())->get_shopping_cart().print_cart();
                         menu.print_menu_vizualizare_cart();
                         int choice2;
                         cin >> choice2;
@@ -833,7 +774,7 @@ int main() {
                                 cout << s << endl;
                                 int nr;
                                 cin >> nr;
-                                menu.get_user(menu.get_logged_user()).get_shopping_cart().remove_from_cart(nr);
+                                menu.get_user(menu.get_logged_user())->get_shopping_cart().remove_from_cart(nr);
                                 break;
                             case 3:
                                 goto end;
@@ -855,8 +796,4 @@ int main() {
     }
     return 0;
 }
-
-
-
-
-
+}
