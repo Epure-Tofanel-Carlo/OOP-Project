@@ -16,7 +16,6 @@ public:
             : runtime_error(message) {}
 };
 
-
 class Boardgame {
     string name;
     int min_players;
@@ -342,8 +341,6 @@ public:
     }
 };
 
-
-// este clasa abastracta daca fac checku pt boardgames, dar recomandat aici sa adaug niste printuri specifice sa aiba mai mult sens
 class User {
     ShoppingCart cart;
     string name;
@@ -446,8 +443,21 @@ public:
     void add_money() override {
         int money;
         bool flag = 0;
-        cout << "Introduceti suma de bani care doriti sa o adaugati: ";
-        cin >> money;
+        while (true) {
+            try {
+                cout << "Introduceti suma de bani care doriti sa o adaugati: ";
+                cin >> money;
+                if (cin.fail()) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Valoare invalida, te rog sa introduci un numar valid.\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
         while (flag == 0 )
         {
             cout << "Introduceti nr cardului: " << endl;
@@ -488,7 +498,21 @@ public:
     void add_money() override {
         int money;
         cout << "Introduceti suma pe care doriti sa o adaugati: ";
-        cin >> money;
+        while (true) {
+            try {
+                cout << "Introduceti suma de bani care doriti sa o adaugati: ";
+                cin >> money;
+                if (cin.fail()) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Valoare invalida, te rog sa introduci un numar valid.\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
         set_balance(get_money()+money);
     }
 
@@ -566,6 +590,10 @@ public:
         print_users();
         cout << "Introduceti indexul utilizatorului pe care doriti sa il stergeti: ";
         cin >> index;
+        if (index >= users.size() || index < 0) {
+            cout << "Index invalid!" << endl;
+            return;
+        }
         delete users[index];
         users.erase(users.begin() + index);
         cout << "Utilizatorul a fost sters cu succes!" << endl;
@@ -642,6 +670,22 @@ public:
         }
     }
 
+    Boardgame_List& get_boardgames() {
+        return games;
+    }
+
+    User* get_user(int index) {
+        return users[index];
+    }
+
+    int get_users_size() {
+        return users.size();
+    }
+
+    int get_logged_user() {
+        return logged_user;
+    }
+
     void print_menu1() {
         cout << "1. Login" << endl;
         cout << "2. Register" << endl;
@@ -693,22 +737,6 @@ public:
     }
 
 
-    Boardgame_List& get_boardgames() {
-        return games;
-    }
-
-    User* get_user(int index) {
-        return users[index];
-    }
-
-    int get_users_size() {
-        return users.size();
-    }
-
-    int get_logged_user() {
-        return logged_user;
-    }
-
 };
 
 int main() {
@@ -750,7 +778,7 @@ int main() {
                     cout << "Arrivederci !" << endl;
                     return 0;
                 default:
-                    cout << "Invalid choice!" << endl;
+                    cout << "Alegere invalida!!" << endl;
                     break;
             }
         } else {
