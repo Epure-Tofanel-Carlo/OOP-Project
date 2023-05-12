@@ -4,9 +4,17 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include <stdexcept>
+#include <limits>
 
 using namespace std;
 
+
+class InvalidInputException : public runtime_error {
+public:
+    InvalidInputException(const string& message)
+            : runtime_error(message) {}
+};
 
 
 class Boardgame {
@@ -98,25 +106,109 @@ public:
     }
 
     friend istream& operator>>(istream& input, Boardgame& b) {
-
         string name;
         int min_players;
         int max_players;
         int duration;
         int price;
         int stock;
-        cout << "Introdu numele jocului: ";
-        input >> name;
-        cout << "Introdu numarul minim de jucatori: ";
-        input >> min_players;
-        cout << "Introdu numarul maxim de jucatori: ";
-        input >> max_players;
-        cout << "Introdu durata jocului: ";
-        input >> duration;
-        cout << "Introdu pretul jocului: ";
-        input >> price;
-        cout << "Introdu stocul jocului: ";
-        input >> stock;
+
+        while (true) {
+            try {
+                cout << "Introdu numele jocului: ";
+                input >> name;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Nume invalid, te rog reintroduce valoarea\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
+        while (true) {
+            try {
+                cout << "Introdu numarul minim de jucatori: ";
+                input >> min_players;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Numar de jucatori minim invalid, te rog reintroduce valoarea \n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
+        while (true) {
+            try {
+                cout << "Introdu numarul maxim de jucatori: ";
+                input >> max_players;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Numar de jucatori maxim invalid, te rog reintroduce valoarea\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
+        while (true) {
+            try {
+                cout << "Introdu durata jocului: ";
+                input >> duration;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Durata invalida, te rog reintroduce valoarea\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
+        while (true) {
+            try {
+                cout << "Introdu pretul jocului: ";
+                input >> price;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Pret invalid, te rog reintroduce valoarea\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
+        while (true) {
+            try {
+                cout << "Introdu stocul jocului: ";
+                input >> stock;
+                if (input.fail()) {
+                    input.clear();
+                    input.ignore(numeric_limits<streamsize>::max(), '\n');
+                    throw InvalidInputException("Stock invalid, te rog reintroduce valoarea\n");
+                } else {
+                    break;
+                }
+            } catch (InvalidInputException& e) {
+                cout << e.what();
+            }
+        }
+
         b.name = name;
         b.min_players = min_players;
         b.max_players = max_players;
@@ -127,10 +219,8 @@ public:
         return input;
     }
 
-};
+    };
 
-
-using namespace std;
 
 class ShoppingCart {
     vector<Boardgame> cart;
@@ -338,7 +428,6 @@ public:
 
 int User::id_count = 0;
 
-//add_money va fi un regex pt card data, cu exception ca in cerinta
 
 class RegularUser : public User {
 public:
@@ -353,7 +442,7 @@ public:
     void print_welcome() override {
         cout << "Bine ai venit, " << get_name() << "!" << endl;
     }
-    // aici sa adaug exception daca nu da bani bine
+
     void add_money() override {
         int money;
         bool flag = 0;
@@ -393,8 +482,8 @@ public:
         return true;
     }
     void print_welcome() override {
-        cout << "Bine ai venit admin, " << get_name() << "." << endl;
-        cout << "Ca si admin ai mai multe statistici afisate, si poti adauga jocuri in magazin." << endl;
+        cout << "Bine ai venit admin." << endl;
+        cout << "Ca si admin ai mai multe statistici afisate, si poti adauga jocuri in magazin si sa stergi utilizatori." << endl;
     }
     void add_money() override {
         int money;
@@ -405,9 +494,6 @@ public:
 
 };
 
-
-
-//check if can add boardgames virtual in user
 
 class Menu {
     vector<User*> users;
@@ -469,10 +555,20 @@ public:
         logged_user = -1;
         cout << "Ati fost delogat cu succes!" << endl;
     }
-
-    void remove_user(int index) {
+    void print_users() {
+        cout << "Utilizatorii sunt: " << endl;
+        for (int i = 1; i < users.size(); i++) {
+            cout << i << ". " << users[i]->get_name() << endl;
+        }
+    }
+    void remove_user() {
+        int index;
+        print_users();
+        cout << "Introduceti indexul utilizatorului pe care doriti sa il stergeti: ";
+        cin >> index;
         delete users[index];
         users.erase(users.begin() + index);
+        cout << "Utilizatorul a fost sters cu succes!" << endl;
     }
 
 
@@ -572,7 +668,8 @@ public:
         cout << "2. Vizualizeaza selectia de jocuri" << endl;
         cout << "3. Vizualizare cos" << endl;
         cout << "4. Adauga jocuri in magazin" << endl;
-        cout << "5. Logout" << endl;
+        cout << "5. Sterge un utilizator" << endl;
+        cout << "6. Logout" << endl;
     }
 
     void print_menu_vizualizare_jocuri() {
@@ -657,10 +754,6 @@ int main() {
                     break;
             }
         } else {
-            // daca dau registrer cu carlo carlo si incerc login aici da seg fault
-            // ca nu e initializat logged_user si nu e -1 si nu intra in if
-            // vezi ca nu merge loginul cum trebuie si nu stiu de ce
-
             AdminUser *admin_user = dynamic_cast<AdminUser *>(menu.get_user(menu.get_logged_user()));
             if (admin_user) {
                 admin_user->print_welcome();
@@ -728,6 +821,9 @@ int main() {
                     end:
                         break;
                     case 5:
+                        menu.remove_user();
+                        break;
+                    case 6:
                         menu.logout();
                         break;
                     default: {
