@@ -452,11 +452,28 @@ public:
             cout << "Numele sau parola incorecta!" << endl;
     }
 
+    void register_user() {
+        string name, password;
+        cout << "Introduceti numele: ";
+        cin >> name;
+        cout << "Introduceti parola: ";
+        cin >> password;
+        User* user = new RegularUser(name, password, 0);
+        add_user(user);
+        cout << " ---------------------------------- " << endl;
+        cout << "Contul dumneavoastra a fost creat cu succes!" << endl;
+        cout << " ---------------------------------- " << endl;
+    }
+
     void logout() {
         logged_user = -1;
         cout << "Ati fost delogat cu succes!" << endl;
     }
 
+    void remove_user(int index) {
+        delete users[index];
+        users.erase(users.begin() + index);
+    }
 
 
     void add_board(const Boardgame& joc) {
@@ -578,19 +595,6 @@ public:
         cout << "3. Inapoi" << endl;
     }
 
-    void register_user() {
-        string name, password;
-        cout << "Introduceti numele: ";
-        cin >> name;
-        cout << "Introduceti parola: ";
-        cin >> password;
-        RegularUser utilizator(name, password, 0);
-        User* user = static_cast<User*>(&utilizator);
-        add_user(user);
-        cout << " ---------------------------------- " << endl;
-        cout << "Contul dumneavoastra a fost creat cu succes!" << endl;
-        cout << " ---------------------------------- " << endl;
-    }
 
     Boardgame_List& get_boardgames() {
         return games;
