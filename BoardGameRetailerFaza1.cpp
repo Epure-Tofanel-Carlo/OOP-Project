@@ -619,7 +619,7 @@ int main() {
     Menu menu;
     Boardgame a1(string("Dune: Imperium"), 2, 5, 180, 300, 5);
     Boardgame a2(string("Calico"), 2, 4, 120, 150, 10);
-    Boardgame a3(string ("Turncoats"), 2, 5, 60, 999, 1);
+    Boardgame a3(string("Turncoats"), 2, 5, 60, 999, 1);
     Boardgame a6(string("Modern Art"), 3, 5, 120, 270, 1);
     Boardgame a7(string("Kakerlaken"), 2, 6, 60, 100, 3);
     Boardgame a4(a3);
@@ -656,17 +656,16 @@ int main() {
                     cout << "Invalid choice!" << endl;
                     break;
             }
-        } else
-        {
+        } else {
             // daca dau registrer cu carlo carlo si incerc login aici da seg fault
             // ca nu e initializat logged_user si nu e -1 si nu intra in if
             // vezi ca nu merge loginul cum trebuie si nu stiu de ce
 
-            AdminUser* admin_user = dynamic_cast<AdminUser*>(menu.get_user(menu.get_logged_user()));
-            if (admin_user)
-            {
+            AdminUser *admin_user = dynamic_cast<AdminUser *>(menu.get_user(menu.get_logged_user()));
+            if (admin_user) {
                 admin_user->print_welcome();
-                cout << "Numarul de obiecte create de tip User este: " << menu.get_user(menu.get_logged_user())->get_id_count() << endl;
+                cout << "Numarul de obiecte create de tip User este: "
+                     << menu.get_user(menu.get_logged_user())->get_id_count() << endl;
                 cout << "Numarul de useri inregistrati este: " << menu.get_users_size() << endl;
                 menu.print_menu2_admin();
                 cin >> choice1;
@@ -719,8 +718,7 @@ int main() {
                             }
                         }
                         break;
-                    case 4:
-                    {
+                    case 4: {
                         cout << "Introduceti datele jocului pe care doriti sa il adaugati: " << endl;
                         Boardgame b;
                         cin >> b;
@@ -732,15 +730,13 @@ int main() {
                     case 5:
                         menu.logout();
                         break;
-                    default:
-                    {
+                    default: {
                         cout << "Invalid choice!" << endl;
                         break;
                     }
                 }
-            }
-            else {
-                RegularUser* regular_user = dynamic_cast<RegularUser*>(menu.get_user(menu.get_logged_user()));
+            } else {
+                RegularUser *regular_user = dynamic_cast<RegularUser *>(menu.get_user(menu.get_logged_user()));
                 regular_user->print_welcome();
                 menu.print_menu2();
                 cin >> choice1;
