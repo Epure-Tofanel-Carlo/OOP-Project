@@ -406,16 +406,9 @@ public:
         cart.clear_cart();
     }
 
-    virtual bool can_add_boardgames() {
-
-    }
-    virtual void print_welcome() {
-
-    }
-
-    virtual void add_money() {
-
-    }
+    virtual bool can_add_boardgames() const = 0;
+    virtual void print_welcome() const = 0;
+    virtual void add_money() = 0;
 
 
     static int get_id_count() {
@@ -433,10 +426,10 @@ public:
     RegularUser(const string& name, const string& password, const int money)
             : User(name, password, money) {}
 
-    bool can_add_boardgames() override {
+    bool can_add_boardgames() const override {
         return false;
     }
-    void print_welcome() override {
+    void print_welcome() const override {
         cout << "Bine ai venit, " << get_name() << "!" << endl;
     }
 
@@ -488,10 +481,10 @@ public:
 
     AdminUser(const string& name, const string& password, const int money)
             : User(name, password, money) {}
-    bool can_add_boardgames() override {
+    bool can_add_boardgames() const override {
         return true;
     }
-    void print_welcome() override {
+    void print_welcome() const override {
         cout << "Bine ai venit admin." << endl;
         cout << "Ca si admin ai mai multe statistici afisate, si poti adauga jocuri in magazin si sa stergi utilizatori." << endl;
     }

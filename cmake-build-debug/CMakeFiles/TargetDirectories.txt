@@ -1,3 +1,0 @@
-C:/Users/Carlo/Documents/GitHub/Semestrul2ProiectPO/cmake-build-debug/CMakeFiles/Semestrul2ProiectPO.dir
-C:/Users/Carlo/Documents/GitHub/Semestrul2ProiectPO/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Carlo/Documents/GitHub/Semestrul2ProiectPO/cmake-build-debug/CMakeFiles/rebuild_cache.dir
