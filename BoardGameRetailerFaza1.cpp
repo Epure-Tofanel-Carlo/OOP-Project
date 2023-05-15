@@ -682,7 +682,7 @@ public:
         return users.size();
     }
 
-    int get_logged_user() {
+    int get_logged_user() const {
         return logged_user;
     }
 
