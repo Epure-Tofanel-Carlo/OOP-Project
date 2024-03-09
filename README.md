@@ -1,9 +1,9 @@
-# Proiect PO 
+# Proiect OOP
 ## Boardgame Retailer
 
 
 
-Tema aleasa a fost gestionarea datelor unui magazin online de boardgames, iar clasele implementate sunt urmatoarele:
+Clasele implementate sunt urmatoarele:
 
 - Boardgame, o clasa care descrie multiple proprietati a unui joc de masa.
 - ShoppingCart, o clasa care memoreaza si gestioneaza cosul de cumparaturi al utilizatorului.
@@ -17,8 +17,8 @@ Tema aleasa a fost gestionarea datelor unui magazin online de boardgames, iar cl
 ## Functionalitati:
 
 - Capabil sa printeze un meniu interactiv in consola.
-- Functionalitate de login, impreuna cu privilegii bonus daca Userul este admin.
-- Capabil sa primeasca input si sa schimbe in mod direct obiectele de ShoppingCart,Boardgame_list si User prin stergere sau adaugare de elemente.
+- Functionalitate de login, impreuna cu privilegii extra daca Userul este admin.
+- Capabil sa primeasca input si sa schimbe in mod direct obiectele de ShoppingCart, Boardgame_list si User prin stergere sau adaugare de elemente.
 - Functionalitate deplina de magazin, prin gestionarea stocului, a soldului, a stocului, a platii etc.
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
